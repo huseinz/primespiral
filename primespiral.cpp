@@ -1,4 +1,8 @@
 #include <SFML/Graphics.hpp>
+#include <stdio.h>
+#include <limits.h>
+#include <string.h>
+#include <errno.h>
 //#include <fstream>
 
 sf::RenderWindow window;
@@ -6,7 +10,7 @@ sf::Image render_img;
 sf::Texture render_tx;
 sf::Sprite render_spr;
 
-const int size = 540;
+int size = 540;
 
 bool isPrime(int n) {
 	if (n == 2) return true;
@@ -98,7 +102,6 @@ long parse_args(int argc, char* argv[]){
 		printf("using default size %d\n", size);
 		return size;
 	}
-	else{
 		int new_size;
 		errno = 0;
 		char* end;
@@ -110,18 +113,19 @@ long parse_args(int argc, char* argv[]){
 			return size;
 		}
 		if(end == argv[1]){
-			f
+			fprintf(stderr, "Invalid size, using default size %d\n", size); 
+			return size;
 		}
 
-
-	}
+		return new_size;
+	return size;
 }
 
 int main(int argc, char* argv[]) {
 
-	
+	size = parse_args(argc, argv);
 
-	render_img.create(width,height,sf::Color::Black);
+	render_img.create(size,size,sf::Color::Black);
 
 	draw_prime_spiral();
 
@@ -131,7 +135,7 @@ int main(int argc, char* argv[]) {
 
 
 	//declare renderwindow
-	window.create(sf::VideoMode(width, height, 32), "wireframe", sf::Style::Default);
+	window.create(sf::VideoMode(size, size, 32), "wireframe", sf::Style::Default);
 	window.setFramerateLimit(60);
 
 	//main loop

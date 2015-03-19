@@ -7,10 +7,9 @@ Usage:
 ```
         ./primespiral size  
 ```
- where `size` is an integer > 0  
-        if `size` is not specified, then 540 will be used as default
-
+where `size` is an integer > 0 that corresponds to the pixel height and width of the spiral
+if `size` is not specified, then 540 will be used as default
 
 Dependencies : SFML > 2.0
 
-If SFML 2.0 is installed, then simply type `make` to compile.
+If SFML 2.0 is installed, then simply type `make` to build.

@@ -72,12 +72,12 @@ void draw_prime_spiral() {
 		for(int i = 0; i < walk_length && current.x >= 0 && current.x <= size && current.y >= 0 && current.y <= size; i++)
 		{
 			//color pixel if it's prime
-			if(isPrime(number))
+			if(isPrime(n))
 				render_img.setPixel(current.x, current.y, sf::Color(0,255,255));
 			
 			//take a step
 			current = step(current, direction);
-			number++;
+			n++;
 		}
 		
 		//change direction
@@ -88,7 +88,7 @@ void draw_prime_spiral() {
 	}
 	
 	//mark center point so we can see it
-	render_img.setPixel(width/2 + 1, height/2 + 1, sf::Color::Red);
+	render_img.setPixel(size/2 + 1, size/2 + 1, sf::Color::Red);
 }
 
 //parse program args (size)
@@ -102,7 +102,7 @@ long parse_args(int argc, char* argv[]){
 	
 	errno = 0;
 	char* end;
-	int new_size; = strtol(argv[1], &end, 10);
+	int new_size = strtol(argv[1], &end, 10);
 	//check errno and if new size > 0
 	if((errno == ERANGE && (new_size == LONG_MAX || new_size <= 0))
 		|| (errno != 0 && new_size == 0)){

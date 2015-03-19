@@ -1,3 +1,10 @@
+/*	primespiral
+*	Zubir Husein
+*	Mar 12 2015
+*	
+*	Generates a prime spiral of a given size.
+*/
+
 #include <SFML/Graphics.hpp>
 #include <stdio.h>
 #include <limits.h>
@@ -23,8 +30,9 @@ bool isPrime(int n) {
 	return true;
 }
 
+//return the next pixel (step) in the path we're walking
 //0 is right, 1 is up, 2 is left, 3 is down
-sf::Vector2u walk(sf::Vector2u v, int direction) {
+sf::Vector2u step(sf::Vector2u v, int direction) {
 	switch(direction) {
 	case 0:
 		return sf::Vector2u(v.x+1, v.y);
@@ -39,6 +47,8 @@ sf::Vector2u walk(sf::Vector2u v, int direction) {
 	}
 }
 
+//We start at the center pixel.
+//We then walk the spiral, coloring each n which is prime
 void draw_prime_spiral() {
 
 	//current pixel, initially center
@@ -46,91 +56,83 @@ void draw_prime_spiral() {
 
 	//direction counter, 0 is right, 1 is up, 2 is left, 3 is down
 	int direction = 0;
-	//how far to walk in a direction
+	//distance of our current walk
 	int walk_length = 1;
-	//the actual current number counter
-	int number = 1;
-
-	//output file stream
-	//  std::ofstream o("out");
-
+	//the number of the current pixel
+	int n = 1;
+	
+	//loop through each walk
 	for (int k = 0; current.x >= 0 && current.x <= size && current.y >= 0 && current.y <= size; k++)
 	{
-		//increment walk length every other change in direction
+		//increase walk length every other time we change direction
 		if(k % 2 == 0 && k != 0)
 			walk_length++;
-
+			
+		//loop through each step
 		for(int i = 0; i < walk_length && current.x >= 0 && current.x <= size && current.y >= 0 && current.y <= size; i++)
 		{
-			//        o << number << " Walk Length: " << walk_length << " Direction: " << direction << " K: " << k;
-
-			//check if number is prime
-			bool p = isPrime(number);
-
-			if(p) {
-				//fancy colors
-				//            if(k % 2 == 0)
-				//                render_img.setPixel(current.x, current.y, sf::Color(0,i,i));
-				//            else
-				//                render_img.setPixel(current.x, current.y, sf::Color(i,0,0));
+			//color pixel if it's prime
+			if(isPrime(number))
 				render_img.setPixel(current.x, current.y, sf::Color(0,255,255));
-			}
-			current = walk(current, direction);
+			
+			//take a step
+			current = step(current, direction);
 			number++;
-
-			//      if(p)
-			//        o << " P\n";
-			//  else
-			//    o << "\n";
 		}
-
+		
+		//change direction
 		if(direction == 3)
 			direction = 0;
 		else
 			direction++;
 	}
-
-	//close output file stream
-//    o.close();
-	//mark center point
-	//  render_img.setPixel(width/2 + 1, height/2 + 1, sf::Color::Red);
+	
+	//mark center point so we can see it
+	render_img.setPixel(width/2 + 1, height/2 + 1, sf::Color::Red);
 }
 
+//parse program args (size)
 long parse_args(int argc, char* argv[]){
 	
+	//no args
 	if(argc == 1){
 		printf("using default size %d\n", size);
 		return size;
 	}
-		int new_size;
-		errno = 0;
-		char* end;
-		new_size = strtol(argv[1], &end, 10);
+	
+	errno = 0;
+	char* end;
+	int new_size; = strtol(argv[1], &end, 10);
+	//check errno and if new size > 0
+	if((errno == ERANGE && (new_size == LONG_MAX || new_size <= 0))
+		|| (errno != 0 && new_size == 0)){
+		fprintf(stderr, "Invalid size, using default size %d\n", size); 
+		return size;
+	}
+	//malformed arg
+	if(end == argv[1]){
+		fprintf(stderr, "Invalid size, using default size %d\n", size); 
+		return size;
+	}
 
-		if((errno == ERANGE && (new_size == LONG_MAX || new_size <= 0))
-			|| (errno != 0 && new_size == 0)){
-			fprintf(stderr, "Invalid size, using default size %d\n", size); 
-			return size;
-		}
-		if(end == argv[1]){
-			fprintf(stderr, "Invalid size, using default size %d\n", size); 
-			return size;
-		}
-
-		return new_size;
-	return size;
+	return new_size;
 }
 
 int main(int argc, char* argv[]) {
 
+	//get size
 	size = parse_args(argc, argv);
-
+	
+	//initialize our canvas
 	render_img.create(size,size,sf::Color::Black);
-
+	
+	//draw spiral
 	draw_prime_spiral();
-
+	
+	//load canvas into texture 
 	render_tx.loadFromImage(render_img);
-
+	
+	//load canvas into sprite object so it can be drawn
 	render_spr.setTexture(render_tx);
 
 
@@ -140,7 +142,8 @@ int main(int argc, char* argv[]) {
 
 	//main loop
 	while (window.isOpen())
-	{
+	{	
+		//check for close events
 		sf::Event event;
 		while (window.pollEvent(event))
 		{
@@ -149,12 +152,14 @@ int main(int argc, char* argv[]) {
 			if (event.key.code == sf::Keyboard::Q)
 				window.close();
 		}
-
+		
+		//display spiral
 		window.clear(sf::Color::Black);
 		window.draw(render_spr);
 		window.display();
 	}
-
+	
+	//write spiral to PNG file
 	render_tx.copyToImage().saveToFile("primespiral.png");
 
 	return 0;

@@ -88,7 +88,7 @@ void draw_prime_spiral() {
 	}
 	
 	//mark center point so we can see it
-	render_img.setPixel(size/2 + 1, size/2 + 1, sf::Color::Red);
+	render_img.setPixel(size/2, size/2, sf::Color::Red);
 }
 
 //parse program args (size)

@@ -62,7 +62,7 @@ void draw_prime_spiral() {
 	int n = 1;
 	
 	//loop through each walk
-	for (int k = 0; current.x >= 0 && current.x <= size && current.y >= 0 && current.y <= size; k++)
+	for (int k = 0; current.x >= 0 && current.x < size && current.y >= 0 && current.y < size; k++)
 	{
 		//increase walk length every other time we change direction
 		if(k % 2 == 0 && k != 0)
